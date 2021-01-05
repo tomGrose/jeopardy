@@ -19,6 +19,8 @@
 //  ]
 
 let categories = [];
+const gameWidth = 6;
+const gameHeight = 6;
 
 // $("body").prepend($("<div id='gameContainer'><div id='gameBoard'></div></div>"))
 // const $button = $("<button id='startButton'>Restart Game</button>");
@@ -31,7 +33,7 @@ let categories = [];
 
 async function getCategoryIds() {
     const result = await axios.get("http://jservice.io/api/categories", {params: {count:80}});
-    let ids = _.sampleSize(result.data.map((val) => val.id), 6);
+    let ids = _.sampleSize(result.data.map((val) => val.id), gameWidth);
     return ids;
 }
 
@@ -61,26 +63,33 @@ async function getCategory(catId) {
 
 async function fillTable(width, height) {
     // create rows and table datas for the table. This should be set up for slight tweaking if you wanted to add more categories to the game board
+
+    //create table and append to the DOM
     const $gameDiv = $("<table id='gameTable'><thead></thead><tbody></tbody></table>");
-    // store rows in array
-    let rows = [];
     $('#gameBoard').prepend($gameDiv);
 
+    // array to store rows
+    let rows = [];
+
+    // Create and add rows to the rows array that will be in the table body, 1 less than height because the first row is in the table header
     for (let i = 0; i < height - 1; i++){
         let $tr = $(`<tr id=${i}></tr>`);
         rows.push($tr);
     }
+    // append row to table head
     $('thead').append(`<tr></tr>`);
+
+    // Append the rows to the table body from the rows array
     for (let i = 0; i < rows.length; i++){
         $("tbody").append(rows[i]);
     }
+    // Add table heads to the table head row with the category name inside
     for (let i = 0; i < width; i++) {
         const $header = $(`<th><h3 class='categories'>${categories[i].title}<h3></th>`);
         $("thead").children().append($header);
     }
-    for (row of rows) {
-
-    }
+    // Add the table data cells to the table body with data that links the category index in 
+    //the global categories array and the clue index within that category
     for (let i = 0; i < width; i++) {
         for (let x = 0; x < width; x++){
             const $rowCell = `<td data-category="${x}" data-clue="${i}">?</td>`
@@ -99,6 +108,7 @@ async function fillTable(width, height) {
 
 function handleClick(evt) {
     const cell = evt.target;
+
     //get data for the specific category index within categories, and the clue index within that category
     const categoryIndx = cell.dataset.category;
     const clueIndx = cell.dataset.clue;
@@ -138,7 +148,7 @@ async function setupAndStart() {
         categories.push({title: cat.title, clues: clues});
     }
     // create the html table
-    fillTable(6, 6);
+    fillTable(gameWidth, gameHeight);
 
 }
 
@@ -152,10 +162,16 @@ $("body").on("click", "button", function(e){
 
 /** On page load, add event handler for clicking clues */
 $(window).on("load", function(e) {
+
+    // add game container on load as well as restart button
     $("body").prepend($("<div id='gameContainer'><div id='gameBoard'></div></div>"))
     const $button = $("<button id='startButton'>Restart Game</button>");
     $("#gameContainer").append($button);
+
+    // Run setupAndStart to set up the game
     setupAndStart();
+
+    //Create event listener for the tds on the page
     $("#gameBoard").on("click", "td", function(e){
         handleClick(e);
     });
