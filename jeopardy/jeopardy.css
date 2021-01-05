@@ -1,0 +1,35 @@
+
+td {
+  padding: 1%;
+  text-align: center;
+  width: 175px;
+  height: 150px;
+  border: 1px solid #000;
+  background-color: #115ff4;
+  color: white;;
+}
+th {
+  padding: 1%;
+  text-align: center;
+  width: 175px;
+  height: 150px;
+  border: 1px solid #000;
+}
+
+#gameBoard {
+  display: flex;
+  justify-content: center;
+  width: 75%;
+  height: 100%;
+  margin: auto;
+}
+
+#startButton {
+  display: block;
+  margin: 2% auto;
+  padding: 10px;
+  background-color: #28a200;
+  border: none;
+
+}
+
